@@ -2,12 +2,11 @@ import express from "express";
 import cors from "cors";
 import body from "body-parser";
 
-const app = express();
+const app = ;
 
 let server;
 
 // setup cors.
-## updated code changes
 app.use(
   cors({
     origin: "*",
