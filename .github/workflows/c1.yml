@@ -10,8 +10,6 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    container:
-      image: node:20
     steps:
       # 1. Checkout code
       - name: Checkout code
