@@ -35,10 +35,7 @@ jobs:
       - name: Zip build folder
         run: zip -r build.zip ./dist
 
-      # 5. Prepare build for deployment (zip folder)
-      - name: Zip build folder
-        run: zip -r build.zip ./build
-
+     
   deploy:
     name: Deploy to Server
     needs: build-and-test       # Only run if build-and-test succeeds
