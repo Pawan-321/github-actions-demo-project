@@ -54,8 +54,8 @@ jobs:
       # 4. Extract and restart service
       - name: Deploy and restart
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }} "
-            cd /path/to/deploy && \
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            cd ${{ secrets.SERVER_PATH }} && \
             unzip -o build.zip && \
             rm build.zip && \
             sudo systemctl restart your-app-service
