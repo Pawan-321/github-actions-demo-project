@@ -1,6 +1,5 @@
 name: Build and Deploy
 
-# Trigger only on push to main
 on:
   push:
     branches:
@@ -8,8 +7,8 @@ on:
 
 jobs:
   build-and-test:
-    name: Build and Test
     runs-on: ubuntu-latest
+
     steps:
       # 1. Checkout code
       - name: Checkout code
@@ -26,21 +25,28 @@ jobs:
       # 4. Build project
       - name: Build project
         run: npm run build
-      
-      - name: Install zip
-        run: sudo apt-get update && sudo apt-get install -y zip
 
-      - name: Zip build folder
-        run: zip -r build.zip ./dist
+      # 5. Package dist folder
+      - name: Package dist folder
+        run: tar -czf dist.tar.gz dist
 
-     
+      # 6. Upload artifact for deployment
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist.tar.gz
+
   deploy:
-    name: Deploy to Server
-    needs: build-and-test       # Only run if build-and-test succeeds
+    needs: build-and-test
     runs-on: ubuntu-latest
+
     steps:
-      # 1. Checkout code (needed for workflow context)
-      - uses: actions/checkout@v3
+      # 1. Download build artifact
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
 
       # 2. Set up SSH
       - name: Set up SSH
@@ -48,16 +54,15 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # 3. Copy build to server
+      # 3. Upload build to Azure VM
       - name: Upload build to server
-        run: scp build.zip ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
+        run: scp dist.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
 
-      # 4. Extract and restart service
-      - name: Deploy and restart
+      # 4. Extract build on Azure VM
+      - name: Extract build on server
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             cd ${{ secrets.SERVER_PATH }} && \
-            unzip -o build.zip && \
-            rm build.zip && \
-            sudo systemctl restart your-app-service
+            tar -xzf dist.tar.gz && \
+            rm dist.tar.gz
           "
