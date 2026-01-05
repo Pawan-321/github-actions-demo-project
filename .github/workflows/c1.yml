@@ -54,6 +54,12 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan {{ secrets.SERVER_HOST } -H  >> ~/.ssh/known_hosts
+
+
       # 3. Upload build to Azure VM
       - name: Upload build to server
         run: scp dist.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
