@@ -28,6 +28,12 @@ jobs:
       # 4. Build project
       - name: Build project
         run: npm run build
+      
+      - name: Install zip
+        run: sudo apt-get update && sudo apt-get install -y zip
+
+      - name: Zip build folder
+        run: zip -r build.zip ./dist
 
       # 5. Prepare build for deployment (zip folder)
       - name: Zip build folder
