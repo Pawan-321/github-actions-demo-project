@@ -49,12 +49,12 @@ jobs:
 
       # 3. Copy build to server
       - name: Upload build to server
-        run: scp build.zip user@your-server-ip:/path/to/deploy/
+        run: scp build.zip ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
 
       # 4. Extract and restart service
       - name: Deploy and restart
         run: |
-          ssh user@your-server-ip "
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }} "
             cd /path/to/deploy && \
             unzip -o build.zip && \
             rm build.zip && \
