@@ -45,17 +45,17 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.7.1
         with:
-          ssh-private-key: AAAAC3NzaC1lZDI1NTE5AAAAIOdWgBXON1hm3ApOjF4yWYGjIxQatUdnZSFhZKEWp9q
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # 3. Copy build to server
       - name: Upload build to server
-        run: scp build.zip azureuser@57.159.30.121:/path/to/deploy/
+        run: scp build.zip ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
 
       # 4. Extract and restart service
       - name: Deploy and restart
         run: |
-          ssh azureuser@57.159.30.121 "
-            cd /path/to/deploy && \
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            cd ${{ secrets.SERVER_PATH }} && \
             unzip -o build.zip && \
             rm build.zip && \
             sudo systemctl restart your-app-service
